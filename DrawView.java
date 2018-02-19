@@ -59,4 +59,8 @@ class DrawView extends SurfaceView implements SurfaceHolder.Callback{
 			} catch (InterruptedException ignored) {}
 		}
 	}
+
+	DrawEngine getEngine() {
+		return engine;
+	}
 }
