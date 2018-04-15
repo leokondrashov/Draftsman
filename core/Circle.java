@@ -2,6 +2,8 @@ package com.lk.draftsman.core;
 
 import android.graphics.Canvas;
 
+import java.util.ArrayList;
+
 public class Circle extends Shape {
 
 	private Point c, a;
@@ -22,5 +24,13 @@ public class Circle extends Shape {
 		super.setHighlight(highlight);
 		a.setHighlight(highlight);
 		c.setHighlight(highlight);
+	}
+
+	@Override
+	public ArrayList<Point> getPoints() {
+		ArrayList<Point> tmp = new ArrayList<>();
+		tmp.add(c);
+		tmp.add(a);
+		return tmp;
 	}
 }

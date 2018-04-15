@@ -2,8 +2,11 @@ package com.lk.draftsman.core;
 
 import android.graphics.Canvas;
 
+import java.util.ArrayList;
+
 public class Line extends Shape {
-	Point a, b;
+
+	private Point a, b;
 
 	public Line(Point a, Point b) {
 		this.a = a;
@@ -23,5 +26,13 @@ public class Line extends Shape {
 		super.setHighlight(highlight);
 		a.setHighlight(highlight);
 		b.setHighlight(highlight);
+	}
+
+	@Override
+	public ArrayList<Point> getPoints() {
+		ArrayList<Point> tmp = new ArrayList<>();
+		tmp.add(a);
+		tmp.add(b);
+		return tmp;
 	}
 }
