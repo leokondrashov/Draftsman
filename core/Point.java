@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 public class Point extends Shape {
 	private float x, y;
+	
+	ArrayList<Shape> dependencies = null;
 
 	public Point(float x, float y) {
 		this.x = x;
@@ -28,6 +30,13 @@ public class Point extends Shape {
 		this.x = x;
 		this.y = y;
 	}
+	
+	public void moveTo(Point oth) {
+		if (oth == null)
+			return;
+		this.x = oth.x;
+		this.y = oth.y;
+	}
 
 	public float getX() {
 		return x;
@@ -39,5 +48,13 @@ public class Point extends Shape {
 
 	public boolean isNear(Point other) {
 		return (this.x - other.x) * (this.x - other.x) + (this.y - other.y) * (this.y - other.y) < 2500;
+	}
+	
+	public void setDependencies(ArrayList<Shape> dependencies) {
+		this.dependencies = dependencies;
+	}
+	
+	public void update() {
+		//TODO updating
 	}
 }

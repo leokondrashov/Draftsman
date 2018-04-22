@@ -9,7 +9,7 @@ import android.view.MotionEvent;
 import java.util.ArrayList;
 
 public class DrawEngine {
-	private Point p;
+	private Point p, tmp = null;
 	private Shape shape;
 	private ArrayList<Point> points = new ArrayList<>();
 	private ArrayList<Shape> list = new ArrayList<>();
@@ -47,27 +47,27 @@ public class DrawEngine {
 
 	public void touch(MotionEvent event) {
 		float x = event.getX(), y = event.getY();
+		//TODO setting points on other shapes
 		if (tool == Tool.Drag) {
-			// TODO dragging
 			switch (event.getAction()) {
 				case MotionEvent.ACTION_DOWN:
 					p = new Point(event.getX(), event.getY());
-					for (Shape point : list) {
-						if ((point instanceof Point) && p.isNear((Point) point)) {
-							p = (Point) point;
-							p.setHighlight(true);
-							break;
-						}
+					tmp = findNearest(p);
+					if (tmp != null) {
+						p = tmp;
+						p.setHighlight(true);
+						tmp = null;
+					} else {
+						p = null;
 					}
 					break;
-				
 				case MotionEvent.ACTION_MOVE:
 					if (p != null) {
 						p.moveTo(x, y);
+						p.moveTo(findNearest(p));
 						for (Shape point : list) {
-							if ((point instanceof Point) && point != p && p.isNear((Point) point)) {
-								p.moveTo(((Point) point).getX(), ((Point) point).getY());
-								break;
+							if ((point instanceof Point) && point != p) {
+								((Point) point).update();
 							}
 						}
 					}
@@ -76,10 +76,10 @@ public class DrawEngine {
 					if (p != null) {
 						p.setHighlight(false);
 						p.moveTo(x, y);
+						p.moveTo(findNearest(p));
 						for (Shape point : list) {
-							if ((point instanceof Point) && point != p && p.isNear((Point) point)) {
-								p.moveTo(((Point) point).getX(), ((Point) point).getY());
-								break;
+							if ((point instanceof Point) && point != p) {
+								((Point) point).update();
 							}
 						}
 						p = null;
@@ -106,25 +106,18 @@ public class DrawEngine {
 					break;
 				case MotionEvent.ACTION_MOVE:
 					p.moveTo(x, y);
-					for (Shape point : list) {
-						if ((point instanceof Point) && p.isNear((Point) point)) {
-							p.moveTo(((Point) point).getX(), ((Point) point).getY());
-							break;
-						}
-					}
+					p.moveTo(findNearest(p));
 					break;
 				case MotionEvent.ACTION_UP:
 					p.moveTo(x, y);
 					p.setHighlight(false);
 					synchronized (points) {
-						for (Shape point : list) {
-							if ((point instanceof Point) && p.isNear((Point) point)) {
-								points.add((Point) point);
-								point.setHighlight(true);
-								break;
-							}
-						}
-						if (points.isEmpty() || !p.isNear(points.get(points.size() - 1))) {
+						tmp = findNearest(p);
+						if (tmp != null) {
+							points.add(tmp);
+							tmp.setHighlight(true);
+							tmp = null;
+						} else {
 							points.add(p);
 							synchronized (list) {
 								list.add(p);
@@ -203,5 +196,14 @@ public class DrawEngine {
 				}
 			}
 		}
+	}
+	
+	public Point findNearest(Point p) {
+		for (Shape point : list) {
+			if ((point instanceof Point) && p.isNear((Point) point)) {
+				return (Point) point;
+			}
+		}
+		return null;
 	}
 }
