@@ -89,13 +89,15 @@ public abstract class Shape {
 			float a1a2 = a1.distance(a2);
 			float cos = (-r2 * r2 + r1 * r1 + a1a2 * a1a2) / 2 / r1 / a1a2;
 			float h = r1 * (float) Math.sqrt(1 - cos * cos);
-			float x0 = (a2.getX() - a1.getX()) / a1a2 * cos * r1;
-			float y0 = (a2.getY() - a1.getY()) / a1a2 * cos * r1;
+			float x0 = a1.getX() + (a2.getX() - a1.getX()) / a1a2 * cos * r1;
+			float y0 = a1.getY() + (a2.getY() - a1.getY()) / a1a2 * cos * r1;
 			float k = -(a2.getX() - a1.getX()) / (a2.getY() - a1.getY());
 			cos = (float) Math.sqrt(k * k + 1);
 			ArrayList<Point> res = new ArrayList<>();
 			res.add(new Point(x0 + h / cos, y0 + k * h / cos));
 			res.add(new Point(x0 - h / cos, y0 - k * h / cos));
+//			Log.d("com.lk", String.format("Intersections: %s\n%s\n%s\n%s\n%f, %f\n%f, %f\n%f, %f", a1.toString(), b1.toString(),
+//					a2.toString(), b2.toString(), x0 + h / cos, y0 + k * h / cos, x0 - h / cos, y0 - k * h / cos, x0, y0));
 			return res;
 		}
 		return new ArrayList<>();

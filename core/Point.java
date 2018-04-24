@@ -84,4 +84,9 @@ public class Point extends Shape {
 			}
 		}
 	}
+	
+	@Override
+	public String toString() {
+		return "Point(" + x + ", " + y + ")";
+	}
 }
