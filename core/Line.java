@@ -5,8 +5,8 @@ import android.graphics.Canvas;
 import java.util.ArrayList;
 
 public class Line extends Shape {
-
-	private Point a, b;
+	
+	Point a, b;
 	
 	Line(Point a, Point b) {
 		this.a = a;

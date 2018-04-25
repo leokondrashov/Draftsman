@@ -8,8 +8,8 @@ public class Point extends Shape {
 	private float x, y;
 	
 	private ArrayList<Shape> dependencies = null;
-
-	public Point(float x, float y) {
+	
+	Point(float x, float y) {
 		this.x = x;
 		this.y = y;
 	}

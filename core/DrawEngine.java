@@ -21,7 +21,8 @@ public class DrawEngine {
 		Drag,
 		Point,
 		Line,
-		Circle
+		Circle,
+		PerpLine
 	}
 
 	public DrawEngine() {
@@ -109,11 +110,19 @@ public class DrawEngine {
 								shape = new Circle(points.get(0), p);
 								shape.setHighlight(true);
 							}
+							break;
+						case PerpLine:
+							if (points.size() == 2) {
+								shape = new PerpLine(points.get(0), points.get(1), p);
+								shape.setHighlight(true);
+							}
 					}
 					break;
 				case MotionEvent.ACTION_MOVE:
 					p.moveTo(x, y);
 					p.moveTo(findNearest(p));
+					if (shape != null)
+						shape.update();
 					break;
 				case MotionEvent.ACTION_UP:
 					p.moveTo(x, y);
@@ -144,6 +153,9 @@ public class DrawEngine {
 								break;
 							case Circle:
 								shape = new Circle(points.get(0), points.get(1));
+								break;
+							case PerpLine:
+								shape = new PerpLine(points.get(0), points.get(1), points.get(2));
 						}
 						synchronized (list) {
 							list.add(shape);
@@ -184,7 +196,7 @@ public class DrawEngine {
 					points.remove(points.size() - 1);
 				} else if (list.get(list.size() - 1) instanceof Point) {
 					list.remove(list.size() - 1);
-				} else if (list.get(list.size() - 1) instanceof Line) {
+				} else {
 					points = list.get(list.size() - 1).getPoints();
 					if (points.get(points.size() - 1) == list.get(list.size() - 2))
 						list.remove(list.size() - 2);
@@ -192,17 +204,13 @@ public class DrawEngine {
 					for (Point point : points) {
 						point.setHighlight(true);
 					}
-					tool = Tool.Line;
-					list.remove(list.size() - 1);
-				} else if (list.get(list.size() - 1) instanceof Circle) {
-					points = list.get(list.size() - 1).getPoints();
-					if (points.get(points.size() - 1) == list.get(list.size() - 2))
-						list.remove(list.size() - 2);
-					points.remove(points.size() - 1);
-					for (Point point : points) {
-						point.setHighlight(true);
-					}
-					tool = Tool.Circle;
+					
+					if (list.get(list.size() - 1) instanceof PerpLine)
+						tool = Tool.PerpLine;
+					else if (list.get(list.size() - 1) instanceof Line)
+						tool = Tool.Line;
+					else if (list.get(list.size() - 1) instanceof Circle)
+						tool = Tool.Circle;
 					list.remove(list.size() - 1);
 				}
 			}
@@ -232,7 +240,7 @@ public class DrawEngine {
 		}
 		ArrayList<Shape> shapes = new ArrayList<>();
 		for (Shape shape : list) {
-			if (!(shape instanceof Point) && shape.isNear(p)) {
+			if (!(shape instanceof Point) && shape.isNear(p) && !shape.getPoints().contains(p)) {
 				shapes.add(shape);
 			}
 		}

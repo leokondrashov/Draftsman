@@ -5,10 +5,10 @@ import android.graphics.Canvas;
 import java.util.ArrayList;
 
 public class Circle extends Shape {
-
-	private Point c, a;
-
-	public Circle(Point c, Point a) {
+	
+	Point c, a;
+	
+	Circle(Point c, Point a) {
 		this.c = c;
 		this.a = a;
 	}

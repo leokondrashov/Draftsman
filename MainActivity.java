@@ -6,8 +6,7 @@ import android.view.View;
 import com.lk.draftsman.core.DrawEngine;
 
 public class MainActivity extends AppCompatActivity {
-
-	private final int TOOLS_COUNT = 2;
+	
 	private DrawEngine engine;
 
 	@Override
@@ -32,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
 			case R.id.circle:
 				engine.setTool(DrawEngine.Tool.Circle);
 				break;
+			case R.id.perpline:
+				engine.setTool(DrawEngine.Tool.PerpLine);
 		}
 	}
 
