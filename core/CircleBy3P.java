@@ -1,10 +1,12 @@
 package com.lk.draftsman.core;
 
+import java.util.ArrayList;
+
 public class CircleBy3P extends Circle {
 	
-	Point p1, p2, p3;
+	private Point p1, p2, p3;
 	
-	public CircleBy3P(Point p1, Point p2, Point p3) {
+	CircleBy3P(Point p1, Point p2, Point p3) {
 		super(null, null);
 		this.p1 = p1;
 		this.p2 = p2;
@@ -26,5 +28,14 @@ public class CircleBy3P extends Circle {
 		float ux = p1.getX() + (cy * (bx * bx + by * by) - by * (cx * cx + cy * cy)) / d;
 		float uy = p1.getY() + (bx * (cx * cx + cy * cy) - cx * (bx * bx + by * by)) / d;
 		c.moveTo(ux, uy);
+	}
+	
+	@Override
+	public ArrayList<Point> getPoints() {
+		ArrayList<Point> res = new ArrayList<>();
+		res.add(p1);
+		res.add(p2);
+		res.add(p3);
+		return res;
 	}
 }
