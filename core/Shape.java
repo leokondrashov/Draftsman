@@ -18,6 +18,8 @@ public abstract class Shape {
 
 	public abstract ArrayList<Point> getPoints();
 	
+	public abstract ArrayList<Point> getGeneralPoints();
+	
 	abstract boolean isNear(Point other);
 	
 	abstract Point nearest(Point p);
@@ -27,10 +29,10 @@ public abstract class Shape {
 	
 	public static ArrayList<Point> intersections(Shape s1, Shape s2) {
 		if (s1 instanceof Line && s2 instanceof Line) {
-			Point a1 = s1.getPoints().get(0);
-			Point b1 = s1.getPoints().get(1);
-			Point a2 = s2.getPoints().get(0);
-			Point b2 = s2.getPoints().get(1);
+			Point a1 = s1.getGeneralPoints().get(0);
+			Point b1 = s1.getGeneralPoints().get(1);
+			Point a2 = s2.getGeneralPoints().get(0);
+			Point b2 = s2.getGeneralPoints().get(1);
 			float k1 = (a1.getY() - b1.getY()) / (a1.getX() - b1.getX());
 			float k2 = (a2.getY() - b2.getY()) / (a2.getX() - b2.getX());
 			float x = (k1 * a1.getX() - k2 * a2.getX() - a1.getY() + a2.getY()) / (k1 - k2);
@@ -39,10 +41,10 @@ public abstract class Shape {
 			res.add(new Point(x, y));
 			return res;
 		} else if (s1 instanceof Circle && s2 instanceof Line) {
-			Point a1 = s1.getPoints().get(0); // Circle
-			Point b1 = s1.getPoints().get(1);
-			Point a2 = s2.getPoints().get(0); // Line
-			Point b2 = s2.getPoints().get(1);
+			Point a1 = s1.getGeneralPoints().get(0); // Circle
+			Point b1 = s1.getGeneralPoints().get(1);
+			Point a2 = s2.getGeneralPoints().get(0); // Line
+			Point b2 = s2.getGeneralPoints().get(1);
 			float r = (float) Math.sqrt((a1.getX() - b1.getX()) * (a1.getX() - b1.getX()) + (a1.getY() - b1.getY()) * (a1.getY() - b1.getY()));
 			if (((Line) s2).distance(a1) > r) {
 				return new ArrayList<>();
@@ -58,10 +60,10 @@ public abstract class Shape {
 			res.add(new Point(x0 - a / cos, y0 - k * a / cos));
 			return res;
 		} else if (s2 instanceof Circle && s1 instanceof Line) {
-			Point a1 = s2.getPoints().get(0); // Circle
-			Point b1 = s2.getPoints().get(1);
-			Point a2 = s1.getPoints().get(0); // Line
-			Point b2 = s1.getPoints().get(1);
+			Point a1 = s2.getGeneralPoints().get(0); // Circle
+			Point b1 = s2.getGeneralPoints().get(1);
+			Point a2 = s1.getGeneralPoints().get(0); // Line
+			Point b2 = s1.getGeneralPoints().get(1);
 			float r = (float) Math.sqrt((a1.getX() - b1.getX()) * (a1.getX() - b1.getX()) + (a1.getY() - b1.getY()) * (a1.getY() - b1.getY()));
 			if (((Line) s1).distance(a1) > r) {
 				return new ArrayList<>();
@@ -77,10 +79,10 @@ public abstract class Shape {
 			res.add(new Point(x0 - a / cos, y0 - k * a / cos));
 			return res;
 		} else if (s1 instanceof Circle && s2 instanceof Circle) {
-			Point a1 = s1.getPoints().get(0);
-			Point b1 = s1.getPoints().get(1);
-			Point a2 = s2.getPoints().get(0);
-			Point b2 = s2.getPoints().get(1);
+			Point a1 = s1.getGeneralPoints().get(0);
+			Point b1 = s1.getGeneralPoints().get(1);
+			Point a2 = s2.getGeneralPoints().get(0);
+			Point b2 = s2.getGeneralPoints().get(1);
 			float r1 = (float) Math.sqrt((a1.getX() - b1.getX()) * (a1.getX() - b1.getX()) + (a1.getY() - b1.getY()) * (a1.getY() - b1.getY()));
 			float r2 = (float) Math.sqrt((a2.getX() - b2.getX()) * (a2.getX() - b2.getX()) + (a2.getY() - b2.getY()) * (a2.getY() - b2.getY()));
 			if (a1.distance(a2) == 0) {

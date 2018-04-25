@@ -26,6 +26,13 @@ public class Point extends Shape {
 		return tmp;
 	}
 	
+	@Override
+	public ArrayList<Point> getGeneralPoints() {
+		ArrayList<Point> tmp = new ArrayList<>();
+		tmp.add(this);
+		return tmp;
+	}
+	
 	void moveTo(float x, float y) {
 		this.x = x;
 		this.y = y;

@@ -60,4 +60,12 @@ public class Line extends Shape {
 		float y0 = a.getY() + ao * (b.getY() - a.getY()) / ab;
 		return new Point(x0, y0);
 	}
+	
+	@Override
+	public ArrayList<Point> getGeneralPoints() {
+		ArrayList<Point> tmp = new ArrayList<>();
+		tmp.add(a);
+		tmp.add(b);
+		return tmp;
+	}
 }

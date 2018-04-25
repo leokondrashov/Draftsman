@@ -61,4 +61,12 @@ public class Circle extends Shape {
 		float y0 = (p.getY() - c.getY()) * ac / pc + c.getY();
 		return new Point(x0, y0);
 	}
+	
+	@Override
+	public ArrayList<Point> getGeneralPoints() {
+		ArrayList<Point> tmp = new ArrayList<>();
+		tmp.add(c);
+		tmp.add(a);
+		return tmp;
+	}
 }

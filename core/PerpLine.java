@@ -3,6 +3,7 @@ package com.lk.draftsman.core;
 import java.util.ArrayList;
 
 public class PerpLine extends Line {
+	
 	private Point p1, p2, p3;
 	
 	PerpLine(Point p1, Point p2, Point p3) {
