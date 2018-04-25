@@ -33,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
 				break;
 			case R.id.perpline:
 				engine.setTool(DrawEngine.Tool.PerpLine);
+				break;
+			case R.id.circleby3p:
+				engine.setTool(DrawEngine.Tool.CircleBy3P);
 		}
 	}
 

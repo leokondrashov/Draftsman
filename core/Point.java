@@ -59,11 +59,11 @@ public class Point extends Shape {
 		return (float) Math.sqrt((this.x - other.x) * (this.x - other.x) + (this.y - other.y) * (this.y - other.y));
 	}
 	
-	public void setDependencies(ArrayList<Shape> dependencies) {
+	void setDependencies(ArrayList<Shape> dependencies) {
 		this.dependencies = dependencies;
 	}
 	
-	public ArrayList<Shape> getDependencies() {
+	ArrayList<Shape> getDependencies() {
 		return dependencies;
 	}
 	

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class PerpLine extends Line {
 	private Point p1, p2, p3;
 	
-	public PerpLine(Point p1, Point p2, Point p3) {
+	PerpLine(Point p1, Point p2, Point p3) {
 		super(null, null);
 		this.p1 = p1;
 		this.p2 = p2;

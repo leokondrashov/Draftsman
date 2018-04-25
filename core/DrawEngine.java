@@ -22,7 +22,8 @@ public class DrawEngine {
 		Point,
 		Line,
 		Circle,
-		PerpLine
+		PerpLine,
+		CircleBy3P
 	}
 
 	public DrawEngine() {
@@ -116,6 +117,12 @@ public class DrawEngine {
 								shape = new PerpLine(points.get(0), points.get(1), p);
 								shape.setHighlight(true);
 							}
+							break;
+						case CircleBy3P:
+							if (points.size() == 2) {
+								shape = new CircleBy3P(points.get(0), points.get(1), p);
+								shape.setHighlight(true);
+							}
 					}
 					break;
 				case MotionEvent.ACTION_MOVE:
@@ -156,6 +163,9 @@ public class DrawEngine {
 								break;
 							case PerpLine:
 								shape = new PerpLine(points.get(0), points.get(1), points.get(2));
+								break;
+							case CircleBy3P:
+								shape = new CircleBy3P(points.get(0), points.get(1), points.get(2));
 						}
 						synchronized (list) {
 							list.add(shape);
@@ -207,6 +217,8 @@ public class DrawEngine {
 					
 					if (list.get(list.size() - 1) instanceof PerpLine)
 						tool = Tool.PerpLine;
+					else if (list.get(list.size() - 1) instanceof CircleBy3P)
+						tool = Tool.CircleBy3P;
 					else if (list.get(list.size() - 1) instanceof Line)
 						tool = Tool.Line;
 					else if (list.get(list.size() - 1) instanceof Circle)
