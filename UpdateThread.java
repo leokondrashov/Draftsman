@@ -1,20 +1,15 @@
 package com.lk.draftsman;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.view.SurfaceHolder;
 import com.lk.draftsman.core.DrawEngine;
-import com.lk.draftsman.core.Point;
-import com.lk.draftsman.core.Shape;
-
-import java.util.ArrayList;
 
 public class UpdateThread extends Thread{
 
 	private final SurfaceHolder surfaceHolder;
 	private boolean runFlag = false;
 	private long prevTime;
-	DrawEngine engine;
+	private DrawEngine engine;
 
 	UpdateThread(SurfaceHolder surfaceHolder, DrawEngine engine){
 		this.surfaceHolder = surfaceHolder;
@@ -45,9 +40,9 @@ public class UpdateThread extends Thread{
 			}
 		}
 	}
-
-
-	public void setRunning(boolean run) {
+	
+	
+	void setRunning(boolean run) {
 		runFlag = run;
 	}
 }

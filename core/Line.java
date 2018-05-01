@@ -2,10 +2,13 @@ package com.lk.draftsman.core;
 
 import android.graphics.Canvas;
 
-public class Line extends Shape {
-	Point a, b;
+import java.util.ArrayList;
 
-	public Line(Point a, Point b) {
+public class Line extends Shape {
+	
+	Point a, b;
+	
+	Line(Point a, Point b) {
 		this.a = a;
 		this.b = b;
 	}
@@ -23,5 +26,46 @@ public class Line extends Shape {
 		super.setHighlight(highlight);
 		a.setHighlight(highlight);
 		b.setHighlight(highlight);
+	}
+
+	@Override
+	public ArrayList<Point> getPoints() {
+		ArrayList<Point> tmp = new ArrayList<>();
+		tmp.add(a);
+		tmp.add(b);
+		return tmp;
+	}
+	
+	@Override
+	boolean isNear(Point p) {
+		return distance(p) < 50;
+	}
+	
+	float distance(Point p) {
+		float ap = a.distance(p);
+		float px = p.getX() - a.getX(), py = p.getY() - a.getY();
+		float bx = b.getX() - a.getX(), by = b.getY() - a.getY();
+		float ab = a.distance(b);
+		float sqrDist = ap * ap - (px * bx + py * by) * (px * bx + py * by) / ab / ab;
+		return (float) Math.sqrt(sqrDist);
+	}
+	
+	@Override
+	Point nearest(Point p) {
+		float px = p.getX() - a.getX(), py = p.getY() - a.getY();
+		float bx = b.getX() - a.getX(), by = b.getY() - a.getY();
+		float ab = a.distance(b);
+		float ao = (px * bx + py * by) / ab;
+		float x0 = a.getX() + ao * (b.getX() - a.getX()) / ab;
+		float y0 = a.getY() + ao * (b.getY() - a.getY()) / ab;
+		return new Point(x0, y0);
+	}
+	
+	@Override
+	public ArrayList<Point> getGeneralPoints() {
+		ArrayList<Point> tmp = new ArrayList<>();
+		tmp.add(a);
+		tmp.add(b);
+		return tmp;
 	}
 }

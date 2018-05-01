@@ -14,7 +14,7 @@ class DrawView extends SurfaceView implements SurfaceHolder.Callback{
 
 	private UpdateThread updateThread;
 	private DrawEngine engine;
-
+	
 	private View.OnTouchListener listener = new OnTouchListener() {
 		@Override
 		public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -22,7 +22,7 @@ class DrawView extends SurfaceView implements SurfaceHolder.Callback{
 			return true;
 		}
 	};
-
+	
 	public DrawView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		getHolder().addCallback(this);
@@ -58,5 +58,9 @@ class DrawView extends SurfaceView implements SurfaceHolder.Callback{
 				retry = false;
 			} catch (InterruptedException ignored) {}
 		}
+	}
+	
+	DrawEngine getEngine() {
+		return engine;
 	}
 }
