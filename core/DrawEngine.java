@@ -25,7 +25,8 @@ public class DrawEngine {
 		PerpLine,
 		CircleBy3P,
 		ParalLine,
-		MidPoint
+		MidPoint,
+		Bisector
 	}
 
 	public DrawEngine() {
@@ -142,6 +143,12 @@ public class DrawEngine {
 								shape = new MidPoint(points.get(0), p);
 								shape.setHighlight(true);
 							}
+							break;
+						case Bisector:
+							if (points.size() == 2) {
+								shape = new Bisector(points.get(0), points.get(1), p);
+								shape.setHighlight(true);
+							}
 					}
 					break;
 				case MotionEvent.ACTION_MOVE:
@@ -194,6 +201,9 @@ public class DrawEngine {
 								break;
 							case MidPoint:
 								shape = new MidPoint(points.get(0), points.get(1));
+								break;
+							case Bisector:
+								shape = new Bisector(points.get(0), points.get(1), points.get(2));
 						}
 						synchronized (list) {
 							list.add(shape);
@@ -253,6 +263,8 @@ public class DrawEngine {
 						tool = Tool.PerpLine;
 					else if (list.get(list.size() - 1) instanceof ParalLine)
 						tool = Tool.ParalLine;
+					else if (list.get(list.size() - 1) instanceof Bisector)
+						tool = Tool.Bisector;
 					else if (list.get(list.size() - 1) instanceof CircleBy3P)
 						tool = Tool.CircleBy3P;
 					else if (list.get(list.size() - 1) instanceof Line)

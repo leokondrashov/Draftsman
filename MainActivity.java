@@ -42,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
 				break;
 			case R.id.midpoint:
 				engine.setTool(DrawEngine.Tool.MidPoint);
+				break;
+			case R.id.bisector:
+				engine.setTool(DrawEngine.Tool.Bisector);
 		}
 	}
 
