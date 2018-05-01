@@ -186,6 +186,9 @@ public class DrawEngine {
 								break;
 							case CircleBy3P:
 								shape = new CircleBy3P(points.get(0), points.get(1), points.get(2));
+								synchronized (list) {
+									list.add(shape.getGeneralPoints().get(0));
+								}
 								break;
 							case ParalLine:
 								shape = new ParalLine(points.get(0), points.get(1), points.get(2));
@@ -238,6 +241,8 @@ public class DrawEngine {
 					list.remove(list.size() - 1);
 				} else {
 					points = list.get(list.size() - 1).getPoints();
+					if (list.get(list.size() - 1) instanceof CircleBy3P)
+						list.remove(list.size() - 2);
 					if (points.get(points.size() - 1) == list.get(list.size() - 2))
 						list.remove(list.size() - 2);
 					points.remove(points.size() - 1);
@@ -267,7 +272,7 @@ public class DrawEngine {
 		Point res = null;
 		float minDist = 50;
 		for (Shape point : list) {
-			if ((point instanceof Point) && !(point instanceof MidPoint) && p.distance((Point) point) < minDist) {
+			if ((point instanceof Point) && !(point instanceof MidPoint) && !(point instanceof CenterPoint) && p.distance((Point) point) < minDist) {
 				res = (Point) point;
 				minDist = p.distance((Point) point);
 			}
