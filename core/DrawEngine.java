@@ -16,8 +16,7 @@ public class DrawEngine {
 	private ArrayList<Point> points = new ArrayList<>();
 	private ArrayList<Shape> list = new ArrayList<>();
 	private Tool tool = Tool.Drag;
-	private final float EPS = 0.01f;
-
+	
 	public enum Tool {
 		Drag,
 		Point,
@@ -283,6 +282,7 @@ public class DrawEngine {
 	private Point findNearest(Point p) {
 		Point res = null;
 		float minDist = 50;
+		float EPS = 0.01f;
 		for (Shape point : list) {
 			if ((point instanceof Point) && point != p && p.distance((Point) point) < (minDist - EPS)) {
 				minDist = p.distance((Point) point);
