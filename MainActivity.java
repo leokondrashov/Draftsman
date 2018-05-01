@@ -39,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
 				break;
 			case R.id.paralline:
 				engine.setTool(DrawEngine.Tool.ParalLine);
+				break;
+			case R.id.midpoint:
+				engine.setTool(DrawEngine.Tool.MidPoint);
 		}
 	}
 

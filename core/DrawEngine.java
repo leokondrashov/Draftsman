@@ -16,6 +16,7 @@ public class DrawEngine {
 	private ArrayList<Point> points = new ArrayList<>();
 	private ArrayList<Shape> list = new ArrayList<>();
 	private Tool tool = Tool.Drag;
+	private final float EPS = 0.01f;
 
 	public enum Tool {
 		Drag,
@@ -24,7 +25,8 @@ public class DrawEngine {
 		Circle,
 		PerpLine,
 		CircleBy3P,
-		ParalLine
+		ParalLine,
+		MidPoint
 	}
 
 	public DrawEngine() {
@@ -44,9 +46,11 @@ public class DrawEngine {
 			}
 		}
 		if (p != null) p.draw(canvas);
-		if (!points.isEmpty())
-			for (Point point : points)
-				point.draw(canvas);
+		synchronized (points) {
+			if (!points.isEmpty())
+				for (Point point : points)
+					point.draw(canvas);
+		}
 		if (shape != null) shape.draw(canvas);
 	}
 
@@ -84,7 +88,10 @@ public class DrawEngine {
 						tmp = findNearest(p);
 						if (tmp != null) {
 							p.moveTo(tmp);
-							p.setDependencies(tmp.getDependencies());
+							if (tmp.getDependencies() != null && !tmp.getDependencies().isEmpty())
+								p.setDependencies(tmp.getDependencies());
+							else
+								p.setDependencies(new ArrayList<Shape>(Collections.singletonList(tmp)));
 							tmp = null;
 						}
 						for (Shape point : list) {
@@ -128,6 +135,12 @@ public class DrawEngine {
 						case ParalLine:
 							if (points.size() == 2) {
 								shape = new ParalLine(points.get(0), points.get(1), p);
+								shape.setHighlight(true);
+							}
+							break;
+						case MidPoint:
+							if (points.size() == 1) {
+								shape = new MidPoint(points.get(0), p);
 								shape.setHighlight(true);
 							}
 					}
@@ -176,18 +189,25 @@ public class DrawEngine {
 								break;
 							case ParalLine:
 								shape = new ParalLine(points.get(0), points.get(1), points.get(2));
+								break;
+							case MidPoint:
+								shape = new MidPoint(points.get(0), points.get(1));
 						}
 						synchronized (list) {
 							list.add(shape);
 						}
 						shape = null;
-						for (Point point : points) {
-							point.setHighlight(false);
+						synchronized (points) {
+							for (Point point : points) {
+								point.setHighlight(false);
+							}
+							points.clear();
 						}
-						points.clear();
 					} else if (tool == Tool.Point) {
-						points.get(0).setHighlight(false);
-						points.clear();
+						synchronized (points) {
+							points.get(0).setHighlight(false);
+							points.clear();
+						}
 					}
 			}
 		}
@@ -214,7 +234,7 @@ public class DrawEngine {
 						list.remove(list.size() - 1);
 					points.get(points.size() - 1).setHighlight(false);
 					points.remove(points.size() - 1);
-				} else if (list.get(list.size() - 1) instanceof Point) {
+				} else if (list.get(list.size() - 1) instanceof Point && !(list.get(list.size() - 1) instanceof MidPoint)) {
 					list.remove(list.size() - 1);
 				} else {
 					points = list.get(list.size() - 1).getPoints();
@@ -235,6 +255,8 @@ public class DrawEngine {
 						tool = Tool.Line;
 					else if (list.get(list.size() - 1) instanceof Circle)
 						tool = Tool.Circle;
+					else if (list.get(list.size() - 1) instanceof MidPoint)
+						tool = Tool.MidPoint;
 					list.remove(list.size() - 1);
 				}
 			}
@@ -245,7 +267,7 @@ public class DrawEngine {
 		Point res = null;
 		float minDist = 50;
 		for (Shape point : list) {
-			if ((point instanceof Point) && p.distance((Point) point) < minDist) {
+			if ((point instanceof Point) && !(point instanceof MidPoint) && p.distance((Point) point) < minDist) {
 				res = (Point) point;
 				minDist = p.distance((Point) point);
 			}
@@ -257,7 +279,7 @@ public class DrawEngine {
 		Point res = null;
 		float minDist = 50;
 		for (Shape point : list) {
-			if ((point instanceof Point) && point != p && p.distance((Point) point) < minDist) {
+			if ((point instanceof Point) && point != p && p.distance((Point) point) < (minDist - EPS)) {
 				minDist = p.distance((Point) point);
 				res = (Point) point;
 			}
@@ -278,7 +300,7 @@ public class DrawEngine {
 		for (int i = 0; i < shapes.size(); i++) {
 			for (int j = i + 1; j < shapes.size(); j++) {
 				for (Point point : Shape.intersections(shapes.get(i), shapes.get(j))) {
-					if (p.distance(point) < minDist) {
+					if (p.distance(point) < (minDist - EPS)) {
 						minDist = p.distance(point);
 						res = point;
 						res.setDependencies(new ArrayList<>(Arrays.asList(shapes.get(i), shapes.get(j))));
@@ -290,7 +312,7 @@ public class DrawEngine {
 		if (res == null) {
 			for (Shape shape : shapes) {
 				Point t = shape.nearest(p);
-				if (t.distance(p) < minDist) {
+				if (t.distance(p) < (minDist - EPS)) {
 					minDist = t.distance(p);
 					res = t;
 					res.setDependencies(new ArrayList<>(Collections.singletonList(shape)));
