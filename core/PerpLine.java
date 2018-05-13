@@ -11,13 +11,23 @@ public class PerpLine extends Line {
 		this.p1 = p1;
 		this.p2 = p2;
 		this.p3 = p3;
-		this.b = new Point(p3.getX() + 100, p3.getY() + 100 * (p1.getX() - p2.getX()) / (p2.getY() - p1.getY()));
+		float k = (p1.getY() - p2.getY()) / (p1.getX() - p2.getX());
+		if (Math.abs(k) > 1) {
+			this.b = new Point(p3.getX() + 100, p3.getY() - 100 / k);
+		} else {
+			this.b = new Point(p3.getX() - 100 * k, p3.getY() + 100);
+		}
 		this.a = p3;
 	}
 	
 	@Override
 	public void update() {
-		b.moveTo(p3.getX() + 100, p3.getY() + 100 * (p1.getX() - p2.getX()) / (p2.getY() - p1.getY()));
+		float k = (p1.getY() - p2.getY()) / (p1.getX() - p2.getX());
+		if (Math.abs(k) > 1) {
+			b.moveTo(p3.getX() + 100, p3.getY() - 100 / k);
+		} else {
+			b.moveTo(p3.getX() - 100 * k, p3.getY() + 100);
+		}
 	}
 	
 	@Override

@@ -230,7 +230,12 @@ public class DrawEngine {
 		for (Point point : points) {
 			point.setHighlight(false);
 		}
-		points.clear();
+		while (!points.isEmpty()) {
+			if (points.get(points.size() - 1) == list.get(list.size() - 1))
+				list.remove(list.size() - 1);
+			points.get(points.size() - 1).setHighlight(false);
+			points.remove(points.size() - 1);
+		}
 	}
 
 	public void Undo() {
