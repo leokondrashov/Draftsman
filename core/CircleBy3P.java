@@ -21,4 +21,9 @@ public class CircleBy3P extends Circle {
 		res.add(p3);
 		return res;
 	}
+	
+	@Override
+	public void update() {
+		c.update();
+	}
 }
