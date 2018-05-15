@@ -13,10 +13,17 @@ public class Point extends Shape {
 		this.x = x;
 		this.y = y;
 	}
+	
+	Point(float x, float y, int color) {
+		this.x = x;
+		this.y = y;
+		this.color = color;
+	}
 
 	@Override
 	public void draw(Canvas canvas) {
-		canvas.drawCircle(x, y, 5, isHighlight ? highlight : notHighlight);
+		paint.setColor(color);
+		canvas.drawCircle(x, y, 5, paint);
 	}
 
 	@Override

@@ -27,7 +27,7 @@ public class UpdateThread extends Thread{
 			}
 			Canvas canvas = null;
 			try {
-				canvas = surfaceHolder.lockCanvas(null);
+				canvas = surfaceHolder.lockCanvas();
 				synchronized (surfaceHolder) {
 					engine.draw(canvas);
 				}

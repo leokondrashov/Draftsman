@@ -8,9 +8,10 @@ public class Line extends Shape {
 	
 	Point a, b;
 	
-	Line(Point a, Point b) {
+	Line(Point a, Point b, int color) {
 		this.a = a;
 		this.b = b;
+		this.color = color;
 	}
 
 	@Override
@@ -35,16 +36,10 @@ public class Line extends Shape {
 			y2 = 0;
 			x2 = -a.getY() / k + a.getX();
 		}
-		canvas.drawLine(x1, y1, x2, y2, isHighlight ? highlight : notHighlight);
+		paint.setColor(color);
+		canvas.drawLine(x1, y1, x2, y2, paint);
 	}
-
-	@Override
-	public void setHighlight(boolean highlight) {
-		super.setHighlight(highlight);
-		a.setHighlight(highlight);
-		b.setHighlight(highlight);
-	}
-
+	
 	@Override
 	public ArrayList<Point> getPoints() {
 		ArrayList<Point> tmp = new ArrayList<>();
