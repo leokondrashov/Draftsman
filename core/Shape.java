@@ -1,20 +1,17 @@
 package com.lk.draftsman.core;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 
 import java.util.ArrayList;
 
 public abstract class Shape {
-
-	boolean isHighlight = false;
-	public static Paint highlight = new Paint(), notHighlight = new Paint();
+	
+	static Paint paint = new Paint();
+	int color = Color.BLACK;
 
 	public abstract void draw(Canvas canvas);
-
-	public void setHighlight(boolean highlight) {
-		isHighlight = highlight;
-	}
 
 	public abstract ArrayList<Point> getPoints();
 	
@@ -27,7 +24,7 @@ public abstract class Shape {
 	public void update() {
 	}
 	
-	public static ArrayList<Point> intersections(Shape s1, Shape s2) {
+	static ArrayList<Point> intersections(Shape s1, Shape s2) {
 		if (s1 instanceof Line && s2 instanceof Line) {
 			Point a1 = s1.getGeneralPoints().get(0);
 			Point b1 = s1.getGeneralPoints().get(1);
@@ -113,5 +110,9 @@ public abstract class Shape {
 			return res;
 		}
 		return new ArrayList<>();
+	}
+	
+	public void setColor(int color) {
+		this.color = color;
 	}
 }

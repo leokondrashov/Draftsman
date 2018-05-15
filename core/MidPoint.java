@@ -6,8 +6,8 @@ public class MidPoint extends Point {
 	
 	private Point a, b;
 	
-	MidPoint(Point a, Point b) {
-		super((a.getX() + b.getX()) / 2, (a.getY() + b.getY()) / 2);
+	MidPoint(Point a, Point b, int color) {
+		super((a.getX() + b.getX()) / 2, (a.getY() + b.getY()) / 2, color);
 		this.a = a;
 		this.b = b;
 	}

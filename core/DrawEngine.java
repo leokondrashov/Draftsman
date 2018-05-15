@@ -1,21 +1,27 @@
 package com.lk.draftsman.core;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.MotionEvent;
+import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
+import com.pes.androidmaterialcolorpickerdialog.ColorPickerCallback;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
 public class DrawEngine {
-	private Point p, tmp = null;
+	private Point p;
 	private Shape shape;
-	private ArrayList<Point> points = new ArrayList<>();
-	private ArrayList<Shape> list = new ArrayList<>();
+	private final ArrayList<Point> points = new ArrayList<>();
+	private final ArrayList<Shape> list = new ArrayList<>();
 	private Tool tool = Tool.Drag;
+	private int color = Color.BLACK;
+	private Paint colorPaint = new Paint();
+	private ColorPicker cp;
 	
 	public enum Tool {
 		Drag,
@@ -28,14 +34,22 @@ public class DrawEngine {
 		MidPoint,
 		Bisector
 	}
-
-	public DrawEngine() {
-		Shape.highlight.setColor(Color.BLUE);
-		Shape.highlight.setStyle(Paint.Style.STROKE);
-		Shape.highlight.setStrokeWidth(5);
-		Shape.notHighlight.setColor(Color.BLACK);
-		Shape.notHighlight.setStyle(Paint.Style.STROKE);
-		Shape.notHighlight.setStrokeWidth(5);
+	
+	public DrawEngine(Context context) {
+		cp = new ColorPicker((Activity) context, 0, 0, 0);
+		cp.setCallback(new ColorPickerCallback() {
+			@Override
+			public void onColorChosen(int color) {
+				DrawEngine.this.color = color;
+				colorPaint.setColor(color);
+				cp.dismiss();
+			}
+		});
+		Shape.paint.setColor(color);
+		Shape.paint.setStyle(Paint.Style.STROKE);
+		Shape.paint.setStrokeWidth(5);
+		colorPaint.setColor(color);
+		colorPaint.setStyle(Paint.Style.FILL);
 	}
 
 	public void draw(Canvas canvas) {
@@ -52,20 +66,23 @@ public class DrawEngine {
 					point.draw(canvas);
 		}
 		if (shape != null) shape.draw(canvas);
+		canvas.drawCircle(50, 50, 50, colorPaint);
 	}
 
 	public void touch(MotionEvent event) {
 		float x = event.getX(), y = event.getY();
-		if (tool == Tool.Drag) {
+		Point tmp;
+		if ((x - 50) * (x - 50) + (y - 50) * (y - 50) < 2500) {
+			if (event.getAction() == MotionEvent.ACTION_DOWN)
+				cp.show();
+		} else if (tool == Tool.Drag) {
 			switch (event.getAction()) {
 				case MotionEvent.ACTION_DOWN:
-					p = new Point(event.getX(), event.getY());
+					p = new Point(x, y);
 					tmp = findNearestPoint(p);
 					if (tmp != null) {
 						p = tmp;
-						p.setHighlight(true);
 						p.setDependencies(null);
-						tmp = null;
 					} else {
 						p = null;
 					}
@@ -83,7 +100,6 @@ public class DrawEngine {
 					break;
 				case MotionEvent.ACTION_UP:
 					if (p != null) {
-						p.setHighlight(false);
 						p.moveTo(x, y);
 						tmp = findNearest(p);
 						if (tmp != null) {
@@ -92,7 +108,6 @@ public class DrawEngine {
 								p.setDependencies(tmp.getDependencies());
 							else
 								p.setDependencies(new ArrayList<Shape>(Collections.singletonList(tmp)));
-							tmp = null;
 						}
 						for (Shape point : list) {
 							if ((point instanceof Point) && point != p) {
@@ -105,49 +120,41 @@ public class DrawEngine {
 		} else {
 			switch (event.getAction()) {
 				case MotionEvent.ACTION_DOWN:
-					p = new Point(x, y);
-					p.setHighlight(true);
+					p = new Point(x, y, color);
 					switch (tool) {
 						case Line:
 							if (points.size() == 1) {
-								shape = new Line(points.get(0), p);
-								shape.setHighlight(true);
+								shape = new Line(points.get(0), p, color);
 							}
 							break;
 						case Circle:
 							if (points.size() == 1) {
-								shape = new Circle(points.get(0), p);
-								shape.setHighlight(true);
+								shape = new Circle(points.get(0), p, color);
 							}
 							break;
 						case PerpLine:
 							if (points.size() == 2) {
-								shape = new PerpLine(points.get(0), points.get(1), p);
-								shape.setHighlight(true);
+								shape = new PerpLine(points.get(0), points.get(1), p, color);
 							}
 							break;
 						case CircleBy3P:
 							if (points.size() == 2) {
-								shape = new CircleBy3P(points.get(0), points.get(1), p);
-								shape.setHighlight(true);
+								shape = new CircleBy3P(points.get(0), points.get(1), p, color);
 							}
 							break;
 						case ParalLine:
 							if (points.size() == 2) {
-								shape = new ParalLine(points.get(0), points.get(1), p);
-								shape.setHighlight(true);
+								shape = new ParalLine(points.get(0), points.get(1), p, color);
 							}
 							break;
 						case MidPoint:
 							if (points.size() == 1) {
-								shape = new MidPoint(points.get(0), p);
-								shape.setHighlight(true);
+								shape = new MidPoint(points.get(0), p, color);
 							}
 							break;
 						case Bisector:
 							if (points.size() == 2) {
-								shape = new Bisector(points.get(0), points.get(1), p);
-								shape.setHighlight(true);
+								shape = new Bisector(points.get(0), points.get(1), p, color);
 							}
 					}
 					break;
@@ -162,14 +169,13 @@ public class DrawEngine {
 					synchronized (points) {
 						tmp = findNearest(p);
 						if (tmp != null) {
+							tmp.setColor(color);
 							points.add(tmp);
 							if (tmp != findNearestPoint(p)) {
 								synchronized (list) {
 									list.add(tmp);
 								}
 							}
-							tmp.setHighlight(true);
-							tmp = null;
 						} else {
 							points.add(p);
 							synchronized (list) {
@@ -179,45 +185,40 @@ public class DrawEngine {
 					}
 					p = null;
 					if (shape != null) {
-						shape.setHighlight(false);
 						switch (tool) {
 							case Line:
-								shape = new Line(points.get(0), points.get(1));
+								shape = new Line(points.get(0), points.get(1), color);
 								break;
 							case Circle:
-								shape = new Circle(points.get(0), points.get(1));
+								shape = new Circle(points.get(0), points.get(1), color);
 								break;
 							case PerpLine:
-								shape = new PerpLine(points.get(0), points.get(1), points.get(2));
+								shape = new PerpLine(points.get(0), points.get(1), points.get(2), color);
 								break;
 							case CircleBy3P:
-								shape = new CircleBy3P(points.get(0), points.get(1), points.get(2));
+								shape = new CircleBy3P(points.get(0), points.get(1), points.get(2), color);
 								synchronized (list) {
 									list.add(shape.getGeneralPoints().get(0));
 								}
 								break;
 							case ParalLine:
-								shape = new ParalLine(points.get(0), points.get(1), points.get(2));
+								shape = new ParalLine(points.get(0), points.get(1), points.get(2), color);
 								break;
 							case MidPoint:
-								shape = new MidPoint(points.get(0), points.get(1));
+								shape = new MidPoint(points.get(0), points.get(1), color);
 								break;
 							case Bisector:
-								shape = new Bisector(points.get(0), points.get(1), points.get(2));
+								shape = new Bisector(points.get(0), points.get(1), points.get(2), color);
 						}
 						synchronized (list) {
 							list.add(shape);
 						}
 						shape = null;
 						synchronized (points) {
-							for (Point point : points) {
-								point.setHighlight(false);
-							}
 							points.clear();
 						}
 					} else if (tool == Tool.Point) {
 						synchronized (points) {
-							points.get(0).setHighlight(false);
 							points.clear();
 						}
 					}
@@ -227,16 +228,17 @@ public class DrawEngine {
 
 	public void setTool(Tool tool) {
 		this.tool = tool;
-		for (Point point : points) {
-			point.setHighlight(false);
+		while (!points.isEmpty()) {
+			if (points.get(points.size() - 1) == list.get(list.size() - 1))
+				list.remove(list.size() - 1);
+			points.remove(points.size() - 1);
 		}
-		points.clear();
 	}
 
 	public void Undo() {
-		Log.d("com.lk", "Undo: \nlist-" + list.size() + "\npoints-" + points.size() + "\nshape-"
-				+ (list.isEmpty() ? "none" : list.get(list.size() - 1).getClass().getName()) + "\n"
-				+ (list.isEmpty() || points.isEmpty() ? "none" : list.get(list.size() - 1) == points.get(points.size() - 1)));
+//		Log.d("com.lk", "Undo: \nlist-" + list.size() + "\npoints-" + points.size() + "\nshape-"
+//				+ (list.isEmpty() ? "none" : list.get(list.size() - 1).getClass().getName()) + "\n"
+//				+ (list.isEmpty() || points.isEmpty() ? "none" : list.get(list.size() - 1) == points.get(points.size() - 1)));
 		synchronized (list) {
 			synchronized (points) {
 				if (list.isEmpty())
@@ -244,20 +246,17 @@ public class DrawEngine {
 				if (!points.isEmpty()) {
 					if (points.get(points.size() - 1) == list.get(list.size() - 1))
 						list.remove(list.size() - 1);
-					points.get(points.size() - 1).setHighlight(false);
 					points.remove(points.size() - 1);
 				} else if (list.get(list.size() - 1) instanceof Point && !(list.get(list.size() - 1) instanceof MidPoint)) {
 					list.remove(list.size() - 1);
 				} else {
-					points = list.get(list.size() - 1).getPoints();
+					points.clear();
+					points.addAll(list.get(list.size() - 1).getPoints());
 					if (list.get(list.size() - 1) instanceof CircleBy3P)
 						list.remove(list.size() - 2);
 					if (points.get(points.size() - 1) == list.get(list.size() - 2))
 						list.remove(list.size() - 2);
 					points.remove(points.size() - 1);
-					for (Point point : points) {
-						point.setHighlight(true);
-					}
 					
 					if (list.get(list.size() - 1) instanceof PerpLine)
 						tool = Tool.PerpLine;

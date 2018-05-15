@@ -4,8 +4,8 @@ public class CenterPoint extends Point {
 	
 	private Point p1, p2, p3;
 	
-	CenterPoint(Point p1, Point p2, Point p3) {
-		super(0, 0);
+	CenterPoint(Point p1, Point p2, Point p3, int color) {
+		super(0, 0, color);
 		this.p1 = p1;
 		this.p2 = p2;
 		this.p3 = p3;

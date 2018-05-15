@@ -8,26 +8,38 @@ public class Line extends Shape {
 	
 	Point a, b;
 	
-	Line(Point a, Point b) {
+	Line(Point a, Point b, int color) {
 		this.a = a;
 		this.b = b;
+		this.color = color;
 	}
 
 	@Override
 	public void draw(Canvas canvas) {
-		float y1, y2;
-		y1 = (a.getY() - b.getY()) / (a.getX() - b.getX()) * (- a.getX()) + a.getY();
-		y2 = (a.getY() - b.getY()) / (a.getX() - b.getX()) * (canvas.getWidth() - a.getX()) + a.getY();
-		canvas.drawLine(0, y1, canvas.getWidth(), y2, isHighlight ? highlight : notHighlight);
+		float k = (a.getY() - b.getY()) / (a.getX() - b.getX());
+		float y1, y2, x1, x2;
+		y1 = -k * a.getX() + a.getY();
+		x1 = 0;
+		if (y1 > canvas.getHeight()) {
+			y1 = canvas.getHeight();
+			x1 = (y1 - a.getY()) / k + a.getX();
+		} else if (y1 < 0) {
+			y1 = 0;
+			x1 = -a.getY() / k + a.getX();
+		}
+		y2 = k * (canvas.getWidth() - a.getX()) + a.getY();
+		x2 = canvas.getWidth();
+		if (y2 > canvas.getHeight()) {
+			y2 = canvas.getHeight();
+			x2 = (y2 - a.getY()) / k + a.getX();
+		} else if (y2 < 0) {
+			y2 = 0;
+			x2 = -a.getY() / k + a.getX();
+		}
+		paint.setColor(color);
+		canvas.drawLine(x1, y1, x2, y2, paint);
 	}
-
-	@Override
-	public void setHighlight(boolean highlight) {
-		super.setHighlight(highlight);
-		a.setHighlight(highlight);
-		b.setHighlight(highlight);
-	}
-
+	
 	@Override
 	public ArrayList<Point> getPoints() {
 		ArrayList<Point> tmp = new ArrayList<>();

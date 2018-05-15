@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class Bisector extends Line {
 	private Point p1, p2, p3;
 	
-	public Bisector(Point p1, Point p2, Point p3) {
-		super(p2, null);
+	Bisector(Point p1, Point p2, Point p3, int color) {
+		super(p2, null, color);
 		this.p1 = p1;
 		this.p2 = p2;
 		this.p3 = p3;

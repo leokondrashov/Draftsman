@@ -8,15 +8,17 @@ public class Circle extends Shape {
 	
 	Point c, a;
 	
-	Circle(Point c, Point a) {
+	Circle(Point c, Point a, int color) {
 		this.c = c;
 		this.a = a;
+		this.color = color;
 	}
 
 	@Override
 	public void draw(Canvas canvas) {
 		float r = (float) Math.sqrt((c.getX() - a.getX()) * (c.getX() - a.getX()) + (c.getY() - a.getY()) * (c.getY() - a.getY()));
-		canvas.drawCircle(c.getX(), c.getY(), r, isHighlight ? highlight : notHighlight);
+		paint.setColor(color);
+		canvas.drawCircle(c.getX(), c.getY(), r, paint);
 	}
 	
 	@Override
@@ -31,13 +33,6 @@ public class Circle extends Shape {
 		float r1 = (float) Math.sqrt((a1.getX() - b1.getX()) * (a1.getX() - b1.getX()) + (a1.getY() - b1.getY()) * (a1.getY() - b1.getY()));
 		float r2 = (float) Math.sqrt((a2.getX() - b2.getX()) * (a2.getX() - b2.getX()) + (a2.getY() - b2.getY()) * (a2.getY() - b2.getY()));
 		return (a1.distance(a2) == 0) && (r1 == r2);
-	}
-	
-	@Override
-	public void setHighlight(boolean highlight) {
-		super.setHighlight(highlight);
-		a.setHighlight(highlight);
-		c.setHighlight(highlight);
 	}
 
 	@Override
