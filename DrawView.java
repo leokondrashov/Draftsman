@@ -63,7 +63,7 @@ class DrawView extends SurfaceView implements SurfaceHolder.Callback {
 		return engine;
 	}
 	
-	public void setEngine(DrawEngine engine) {
+	void setEngine(DrawEngine engine) {
 		this.engine = engine;
 	}
 }

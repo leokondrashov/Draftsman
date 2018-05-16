@@ -358,15 +358,34 @@ public class DrawEngine implements Serializable {
 		Point res = null;
 		float minDist = 50;
 		float EPS = 0.01f;
-		for (Shape point : list) {
+		ArrayList<Shape> tmp = new ArrayList<>(list);
+		tmp.remove(p);
+		for (int i = 0; i < tmp.size(); i++) {
+			boolean flag = true;
+			if (!(tmp.get(i) instanceof Point) || (tmp.get(i) instanceof MidPoint) || (tmp.get(i) instanceof CenterPoint)) {
+				for (Point point : tmp.get(i).getPoints()) {
+					flag &= tmp.contains(point);
+				}
+			} else if (((Point) tmp.get(i)).getDependencies() != null) {
+				for (Shape shape : ((Point) tmp.get(i)).getDependencies()) {
+					flag &= tmp.contains(shape);
+				}
+			}
+			if (!flag) {
+				tmp.remove(i);
+				i--;
+			}
+		}
+		for (Shape point : tmp) {
 			if ((point instanceof Point) && point != p && p.distance((Point) point) < (minDist - EPS)) {
 				minDist = p.distance((Point) point);
 				res = (Point) point;
 			}
 		}
+		
 		ArrayList<Shape> shapes = new ArrayList<>();
-		for (Shape shape : list) {
-			if (!(shape instanceof Point) && shape.isNear(p) && !shape.getPoints().contains(p)) {
+		for (Shape shape : tmp) {
+			if (!(shape instanceof Point) && shape.isNear(p)) {
 				shapes.add(shape);
 			}
 		}
