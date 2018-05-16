@@ -2,6 +2,7 @@ package com.lk.draftsman.core;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -9,11 +10,12 @@ import android.view.MotionEvent;
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
 import com.pes.androidmaterialcolorpickerdialog.ColorPickerCallback;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-public class DrawEngine {
+public class DrawEngine implements Serializable {
 	private Point p;
 	private Shape shape;
 	private final ArrayList<Point> points = new ArrayList<>();
@@ -22,6 +24,9 @@ public class DrawEngine {
 	private int color = Color.BLACK;
 	private Paint colorPaint = new Paint(), txtPaint = new Paint();
 	private ColorPicker cp;
+	private Context context;
+	private boolean isLandscape;
+	private int width;
 	
 	public enum Tool {
 		Drag,
@@ -36,6 +41,7 @@ public class DrawEngine {
 	}
 	
 	public DrawEngine(Context context) {
+		this.context = context;
 		cp = new ColorPicker((Activity) context, 0, 0, 0);
 		cp.setCallback(new ColorPickerCallback() {
 			@Override
@@ -45,6 +51,8 @@ public class DrawEngine {
 				cp.dismiss();
 			}
 		});
+		isLandscape = context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+		width = (isLandscape ? context.getResources().getDisplayMetrics().heightPixels : context.getResources().getDisplayMetrics().widthPixels);
 		Shape.paint.setColor(color);
 		Shape.paint.setStyle(Paint.Style.STROKE);
 		Shape.paint.setStrokeWidth(5);
@@ -54,7 +62,44 @@ public class DrawEngine {
 		txtPaint.setStyle(Paint.Style.FILL);
 		txtPaint.setTextSize(50);
 	}
-
+	
+	public void checkOrientation() {
+		if ((context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) ^ isLandscape) {
+			if (!isLandscape) {
+				synchronized (list) {
+					for (Shape s : list) {
+						if (s instanceof Point && !(s instanceof MidPoint) && !(s instanceof CenterPoint)) {
+							((Point) s).moveTo(((Point) s).getY(), width - ((Point) s).getX());
+						} else {
+							s.update();
+						}
+					}
+				}
+				synchronized (points) {
+					for (Point p : points) {
+						p.moveTo(p.getY(), width - p.getX());
+					}
+				}
+			} else {
+				synchronized (list) {
+					for (Shape s : list) {
+						if (s instanceof Point && !(s instanceof MidPoint) && !(s instanceof CenterPoint)) {
+							((Point) s).moveTo(width - ((Point) s).getY(), ((Point) s).getX());
+						} else {
+							s.update();
+						}
+					}
+				}
+				synchronized (points) {
+					for (Point p : points) {
+						p.moveTo(width - p.getY(), p.getX());
+					}
+				}
+			}
+			isLandscape = !isLandscape;
+		}
+	}
+	
 	public void draw(Canvas canvas) {
 		canvas.drawColor(Color.WHITE);
 		synchronized (list) {
@@ -235,8 +280,12 @@ public class DrawEngine {
 	}
 	
 	private void clear() {
-		list.clear();
-		points.clear();
+		synchronized (list) {
+			list.clear();
+		}
+		synchronized (points) {
+			points.clear();
+		}
 		p = null;
 		shape = null;
 	}

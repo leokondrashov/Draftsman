@@ -10,7 +10,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import com.lk.draftsman.core.DrawEngine;
 
-class DrawView extends SurfaceView implements SurfaceHolder.Callback{
+class DrawView extends SurfaceView implements SurfaceHolder.Callback {
 
 	private UpdateThread updateThread;
 	private DrawEngine engine;
@@ -61,5 +61,9 @@ class DrawView extends SurfaceView implements SurfaceHolder.Callback{
 	
 	DrawEngine getEngine() {
 		return engine;
+	}
+	
+	public void setEngine(DrawEngine engine) {
+		this.engine = engine;
 	}
 }

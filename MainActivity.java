@@ -13,10 +13,21 @@ public class MainActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		engine = ((DrawView) findViewById(R.id.drawView)).getEngine();
+		if (savedInstanceState == null || savedInstanceState.getSerializable("ENGINE") == null) {
+			engine = ((DrawView) findViewById(R.id.drawView)).getEngine();
+		} else {
+			engine = (DrawEngine) savedInstanceState.getSerializable("ENGINE");
+			((DrawView) findViewById(R.id.drawView)).setEngine(engine);
+			engine.checkOrientation();
+		}
 	}
-
-
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putSerializable("ENGINE", engine);
+	}
+	
 	public void onClick(View view) {
 		switch (view.getId()) {
 			case R.id.drag:
