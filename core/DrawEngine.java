@@ -20,7 +20,7 @@ public class DrawEngine {
 	private final ArrayList<Shape> list = new ArrayList<>();
 	private Tool tool = Tool.Drag;
 	private int color = Color.BLACK;
-	private Paint colorPaint = new Paint();
+	private Paint colorPaint = new Paint(), txtPaint = new Paint();
 	private ColorPicker cp;
 	
 	public enum Tool {
@@ -50,6 +50,9 @@ public class DrawEngine {
 		Shape.paint.setStrokeWidth(5);
 		colorPaint.setColor(color);
 		colorPaint.setStyle(Paint.Style.FILL);
+		txtPaint.setColor(Color.BLACK);
+		txtPaint.setStyle(Paint.Style.FILL);
+		txtPaint.setTextSize(50);
 	}
 
 	public void draw(Canvas canvas) {
@@ -67,14 +70,18 @@ public class DrawEngine {
 		}
 		if (shape != null) shape.draw(canvas);
 		canvas.drawCircle(50, 50, 50, colorPaint);
+		canvas.drawText("clr", 100, 50, txtPaint);
 	}
-
+	
 	public void touch(MotionEvent event) {
 		float x = event.getX(), y = event.getY();
 		Point tmp;
 		if ((x - 50) * (x - 50) + (y - 50) * (y - 50) < 2500) {
 			if (event.getAction() == MotionEvent.ACTION_DOWN)
 				cp.show();
+		} else if (x > 100 && x < 200 && y < 50) {
+			if (event.getAction() == MotionEvent.ACTION_DOWN)
+				clear();
 		} else if (tool == Tool.Drag) {
 			switch (event.getAction()) {
 				case MotionEvent.ACTION_DOWN:
@@ -169,7 +176,8 @@ public class DrawEngine {
 					synchronized (points) {
 						tmp = findNearest(p);
 						if (tmp != null) {
-							tmp.setColor(color);
+							if (tmp != findNearestPoint(p))
+								tmp.setColor(color);
 							points.add(tmp);
 							if (tmp != findNearestPoint(p)) {
 								synchronized (list) {
@@ -225,7 +233,14 @@ public class DrawEngine {
 			}
 		}
 	}
-
+	
+	private void clear() {
+		list.clear();
+		points.clear();
+		p = null;
+		shape = null;
+	}
+	
 	public void setTool(Tool tool) {
 		this.tool = tool;
 		while (!points.isEmpty()) {
