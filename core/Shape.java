@@ -4,9 +4,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public abstract class Shape {
+public abstract class Shape implements Serializable {
 	
 	static Paint paint = new Paint();
 	int color = Color.BLACK;
