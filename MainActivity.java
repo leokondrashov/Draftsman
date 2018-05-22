@@ -1,13 +1,17 @@
 package com.lk.draftsman;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import com.lk.draftsman.core.DrawEngine;
+import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
+import com.pes.androidmaterialcolorpickerdialog.ColorPickerCallback;
 
 public class MainActivity extends AppCompatActivity {
 	
 	private DrawEngine engine;
+	private ColorPicker cp;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -18,8 +22,19 @@ public class MainActivity extends AppCompatActivity {
 		} else {
 			engine = (DrawEngine) savedInstanceState.getSerializable("ENGINE");
 			((DrawView) findViewById(R.id.drawView)).setEngine(engine);
-			engine.checkOrientation();
+			engine.checkOrientation(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE);
 		}
+		int color = engine.getColor();
+		findViewById(R.id.color).setBackgroundColor(color);
+		cp = new ColorPicker(this, (color >> 16) & 255, (color >> 8) & 255, color & 255);
+		cp.setCallback(new ColorPickerCallback() {
+			@Override
+			public void onColorChosen(int color) {
+				engine.setColor(color);
+				findViewById(R.id.color).setBackgroundColor(color);
+				cp.dismiss();
+			}
+		});
 	}
 	
 	@Override
@@ -62,5 +77,13 @@ public class MainActivity extends AppCompatActivity {
 	@Override
 	public void onBackPressed() {
 		engine.Undo();
+	}
+	
+	public void changeColor(View view) {
+		cp.show();
+	}
+	
+	public void clear(View view) {
+		engine.clear();
 	}
 }

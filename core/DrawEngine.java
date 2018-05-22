@@ -1,14 +1,11 @@
 package com.lk.draftsman.core;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.MotionEvent;
-import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
-import com.pes.androidmaterialcolorpickerdialog.ColorPickerCallback;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,11 +19,16 @@ public class DrawEngine implements Serializable {
 	private final ArrayList<Shape> list = new ArrayList<>();
 	private Tool tool = Tool.Drag;
 	private int color = Color.BLACK;
-	private Paint colorPaint = new Paint(), txtPaint = new Paint();
-	private ColorPicker cp;
-	private Context context;
 	private boolean isLandscape;
 	private int width;
+	
+	public int getColor() {
+		return color;
+	}
+	
+	public void setColor(int color) {
+		this.color = color;
+	}
 	
 	public enum Tool {
 		Drag,
@@ -41,31 +43,16 @@ public class DrawEngine implements Serializable {
 	}
 	
 	public DrawEngine(Context context) {
-		this.context = context;
-		cp = new ColorPicker((Activity) context, 0, 0, 0);
-		cp.setCallback(new ColorPickerCallback() {
-			@Override
-			public void onColorChosen(int color) {
-				DrawEngine.this.color = color;
-				colorPaint.setColor(color);
-				cp.dismiss();
-			}
-		});
 		isLandscape = context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
 		width = (isLandscape ? context.getResources().getDisplayMetrics().heightPixels : context.getResources().getDisplayMetrics().widthPixels);
 		Shape.paint.setColor(color);
 		Shape.paint.setStyle(Paint.Style.STROKE);
 		Shape.paint.setStrokeWidth(5);
-		colorPaint.setColor(color);
-		colorPaint.setStyle(Paint.Style.FILL);
-		txtPaint.setColor(Color.BLACK);
-		txtPaint.setStyle(Paint.Style.FILL);
-		txtPaint.setTextSize(50);
 	}
 	
-	public void checkOrientation() {
-		if ((context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) ^ isLandscape) {
-			if (!isLandscape) {
+	public void checkOrientation(boolean isLandscape) {
+		if (isLandscape ^ this.isLandscape) {
+			if (!this.isLandscape) {
 				synchronized (list) {
 					for (Shape s : list) {
 						if (s instanceof Point && !(s instanceof MidPoint) && !(s instanceof CenterPoint)) {
@@ -96,7 +83,7 @@ public class DrawEngine implements Serializable {
 					}
 				}
 			}
-			isLandscape = !isLandscape;
+			this.isLandscape = isLandscape;
 		}
 	}
 	
@@ -114,20 +101,12 @@ public class DrawEngine implements Serializable {
 					point.draw(canvas);
 		}
 		if (shape != null) shape.draw(canvas);
-		canvas.drawCircle(50, 50, 50, colorPaint);
-		canvas.drawText("clr", 100, 50, txtPaint);
 	}
 	
 	public void touch(MotionEvent event) {
 		float x = event.getX(), y = event.getY();
 		Point tmp;
-		if ((x - 50) * (x - 50) + (y - 50) * (y - 50) < 2500) {
-			if (event.getAction() == MotionEvent.ACTION_DOWN)
-				cp.show();
-		} else if (x > 100 && x < 200 && y < 50) {
-			if (event.getAction() == MotionEvent.ACTION_DOWN)
-				clear();
-		} else if (tool == Tool.Drag) {
+		if (tool == Tool.Drag) {
 			switch (event.getAction()) {
 				case MotionEvent.ACTION_DOWN:
 					p = new Point(x, y);
@@ -221,10 +200,10 @@ public class DrawEngine implements Serializable {
 					synchronized (points) {
 						tmp = findNearest(p);
 						if (tmp != null) {
-							if (tmp != findNearestPoint(p))
+							if (!list.contains(tmp))
 								tmp.setColor(color);
 							points.add(tmp);
-							if (tmp != findNearestPoint(p)) {
+							if (!list.contains(tmp)) {
 								synchronized (list) {
 									list.add(tmp);
 								}
@@ -279,7 +258,7 @@ public class DrawEngine implements Serializable {
 		}
 	}
 	
-	private void clear() {
+	public void clear() {
 		synchronized (list) {
 			list.clear();
 		}
