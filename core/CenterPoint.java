@@ -1,5 +1,7 @@
 package com.lk.draftsman.core;
 
+import java.util.ArrayList;
+
 public class CenterPoint extends Point {
 	
 	private Point p1, p2, p3;
@@ -15,6 +17,15 @@ public class CenterPoint extends Point {
 		float ux = p1.getX() + (cy * (bx * bx + by * by) - by * (cx * cx + cy * cy)) / d;
 		float uy = p1.getY() + (bx * (cx * cx + cy * cy) - cx * (bx * bx + by * by)) / d;
 		this.moveTo(ux, uy);
+	}
+	
+	@Override
+	public ArrayList<Point> getPoints() {
+		ArrayList<Point> res = new ArrayList<>();
+		res.add(p1);
+		res.add(p2);
+		res.add(p3);
+		return res;
 	}
 	
 	@Override
